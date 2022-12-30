@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Scriptable/GunData", fileName = "GunData")]
+[CreateAssetMenu(menuName = "Gun/GunData", fileName = "GunData")]
 public class GunData : ScriptableObject
 {
     public AudioClip shotClip;

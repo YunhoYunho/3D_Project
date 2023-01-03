@@ -11,6 +11,7 @@ public class PlayerInput : MonoBehaviour
     public string reloadButtonName = "Reload";
     public string mouseXAxisName = "Mouse X";
     public string mouseYAxisName = "Mouse Y";
+    public string interActionButtonName = "InterAction";
 
     public float move { get; private set; }
     public float rotate { get; private set; }
@@ -19,6 +20,7 @@ public class PlayerInput : MonoBehaviour
     public bool reload { get; private set; }
     public float mouseX { get; private set; }
     public float mouseY { get; private set; }
+    public bool interAction { get; private set; }
 
     private void Update()
     {
@@ -41,5 +43,6 @@ public class PlayerInput : MonoBehaviour
         reload = Input.GetButtonDown(reloadButtonName);
         mouseX = Input.GetAxis(mouseXAxisName);
         mouseY = Input.GetAxis(mouseYAxisName);
+        interAction = Input.GetButtonDown(interActionButtonName);
     }
 }

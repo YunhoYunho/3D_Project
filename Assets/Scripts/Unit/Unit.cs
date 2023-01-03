@@ -5,16 +5,18 @@ using UnityEngine;
 
 public class Unit : MonoBehaviour, IDamagable
 {
-    public float startHP = 100f;
-    public float hp { get; private set; }
-    public bool dead { get; private set; }
+    public float defaultHP = 100f;
+
+    public float hp { get; protected set; }
+
+    public bool dead { get; protected set; }
 
     public event Action onDeath;
 
     protected virtual void OnEnable()
     {
         dead = false;
-        hp = startHP;
+        hp = defaultHP;
     }
 
     public virtual void TakeDamage(int damage)

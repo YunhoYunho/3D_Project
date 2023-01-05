@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
@@ -8,11 +9,23 @@ public class PlayerController : MonoBehaviour
     private CharacterController controller;
     private Animator playerAnimator;
     private PlayerInput playerInput;
+
     private float moveY = 0;
+    private float originPosY;
+
+    private float applyCrouchPosY;
+    private float applySpeed;
+
+    private bool isGround = true;
+    private bool isCrouch = false;
 
     [Header("General")]
     [SerializeField]
     private float moveSpeed;
+    [SerializeField]
+    private float crouchSpeed;
+    [SerializeField]
+    private float crouchPosY;
     [SerializeField]
     private float jumpPower;
     [SerializeField]
@@ -33,15 +46,25 @@ public class PlayerController : MonoBehaviour
         playerInput = GetComponent<PlayerInput>();
     }
 
-    private void FixedUpdate()
+    private void Start()
     {
-        Move();
-        Jump();
+        applySpeed = moveSpeed;
+        originPosY = Camera.main.transform.localPosition.y;
+        applyCrouchPosY = originPosY;
     }
 
     private void Update()
     {
+        IsGround();
+        TryJump();
+        TryCrouch();
+        Move();
         InterAction();
+    }
+
+    private void IsGround()
+    {
+        isGround = Physics.Raycast(transform.position, Vector3.down, controller.bounds.extents.y + 0.1f);
     }
 
     private void Move()
@@ -50,9 +73,17 @@ public class PlayerController : MonoBehaviour
         controller.Move(transform.right * playerInput.rotate * moveSpeed * Time.deltaTime);
     }
 
+    private void TryJump()
+    {
+        if (isCrouch)
+            Crouch();
+
+        Jump();
+    }
+
     private void Jump()
     {
-        if (playerInput.jump)
+        if (playerInput.jump && isGround)
             moveY = jumpPower;
         else if (controller.isGrounded)
             moveY = 0;
@@ -60,6 +91,52 @@ public class PlayerController : MonoBehaviour
             moveY += gravity * Time.deltaTime;
 
         controller.Move(Vector3.up * moveY * Time.deltaTime);
+    }
+
+    private void TryCrouch()
+    {
+        if (playerInput.crouch)
+        {
+            Crouch();
+        }
+    }
+
+    private void Crouch()
+    {
+        isCrouch = !isCrouch;
+
+        if (isCrouch)
+        {
+            applySpeed = crouchSpeed;
+            applyCrouchPosY = crouchPosY;
+        }
+
+        else
+        {
+            applySpeed = moveSpeed;
+            applyCrouchPosY = originPosY;
+        }
+
+        StartCoroutine(CrouchCoroutine());
+    }
+
+    IEnumerator CrouchCoroutine()
+    {
+        float posY = Camera.main.transform.localPosition.y;
+        int count = 0;
+
+        while (posY != applyCrouchPosY)
+        {
+            count++;
+            posY = Mathf.Lerp(posY, applyCrouchPosY, 0.2f);
+            Camera.main.transform.localPosition = new Vector3(0, posY, 0);
+
+            if (count > 15)
+                break;
+            yield return null;
+        }
+
+        Camera.main.transform.localPosition = new Vector3(0, applyCrouchPosY, 0);
     }
 
     private void InterAction()

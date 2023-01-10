@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Gun : MonoBehaviour
@@ -9,40 +8,52 @@ public class Gun : MonoBehaviour
 
     public State state { get; private set; }
 
-    private Animator GunAnimator;
-    public GunData gunData;
+    public ProjectileData weaponData;
+    private Animator gunAnim;
+    private RaycastHit hit;
+
+    // HUD : ¿‹ø© ≈∫æ‡ / √÷¥Î ≈∫æ‡
+    [Header("Spec")]
+    [SerializeField]
     public int magAmmo;
+    [SerializeField]
+    private float fireRange;
+    [SerializeField]
     private float lastFireTime;
 
+    [Header("Effect")]
+    [SerializeField]
+    private Transform firingTransform;
     [SerializeField]
     private AudioSource gunAudioSource;
-
     [SerializeField]
     private ParticleSystem muzzleFlash;
-
     [SerializeField]
     private ParticleSystem shellEject;
+    [SerializeField]
+    private GameObject hitEffectPrefab;
 
     private void Awake()
     {
-        GunAnimator = GetComponent<Animator>();
+        gunAnim = GetComponent<Animator>();
         gunAudioSource = GetComponent<AudioSource>();
     }
 
     private void OnEnable()
     {
-        magAmmo = gunData.magCapacity;
+        magAmmo = weaponData.magCapacity;
         state = State.Ready;
         lastFireTime = 0;
     }
 
     public void Fire()
     {
-        if (state == State.Ready && Time.time >= lastFireTime + gunData.timeBetFire)
+        if (state == State.Ready && Time.time >= lastFireTime + weaponData.timeBetFire)
         {
             lastFireTime = Time.time;
             Shot();
-            GunAnimator.SetTrigger("Fire");
+
+            gunAnim.SetTrigger("Fire");
         }
     }
 
@@ -51,16 +62,19 @@ public class Gun : MonoBehaviour
         RaycastHit hit;
         Vector3 hitPosition = Vector3.zero;
         if (Physics.Raycast(Camera.main.transform.position,
-            Camera.main.transform.forward, out hit, 200f))
+            Camera.main.transform.forward, out hit, fireRange))
         {
             IDamagable damagable = hit.transform.GetComponent<IDamagable>();
-            damagable?.TakeDamage(gunData.damage);
+            damagable?.TakeDamage(weaponData.damage);
 
             IBulletTakable bulletTakable = hit.transform.GetComponent<IBulletTakable>();
-            bulletTakable?.TakeBullet(hit.point, hit.normal, gunData.bulletForce);
+            bulletTakable?.TakeBullet(hit.point, hit.normal, weaponData.bulletForce);
         }
+
         StartCoroutine(ShotEffect(hitPosition));
 
+        StopAllCoroutines();
+        
         magAmmo--;
         if (magAmmo <= 0)
         {
@@ -72,31 +86,32 @@ public class Gun : MonoBehaviour
     {
         muzzleFlash.Play();
         shellEject.Play();
-        gunAudioSource.PlayOneShot(gunData.shotClip);
+        gunAudioSource.PlayOneShot(weaponData.shotClip);
 
         yield return new WaitForSeconds(0.03f);
     }
 
     public bool Reload()
     {
-        if (state == State.Reloading || magAmmo >= gunData.magCapacity)
+        if (state == State.Reloading || magAmmo >= weaponData.magCapacity)
         {
             return false;
         }
 
-        GunAnimator.SetTrigger("Reload");
-        StartCoroutine(ReloadRoutine());
+        gunAnim.SetTrigger("Reload");
+
+        StartCoroutine(ReloadCoroutine());
         return true;
     }
 
-    private IEnumerator ReloadRoutine()
+    private IEnumerator ReloadCoroutine()
     {
         state = State.Reloading;
-        gunAudioSource.PlayOneShot(gunData.reloadClip);
+        gunAudioSource.PlayOneShot(weaponData.reloadClip);
 
-        yield return new WaitForSeconds(gunData.reloadTime);
+        yield return new WaitForSeconds(weaponData.reloadTime);
 
-        int ammoToFill = gunData.magCapacity - magAmmo;
+        int ammoToFill = weaponData.magCapacity - magAmmo;
         magAmmo += ammoToFill;
         state = State.Ready;
     }

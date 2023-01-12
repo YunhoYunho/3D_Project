@@ -2,14 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(AudioSource))]
 public class Gun : MonoBehaviour
 {
     public enum State { Ready, Empty, Reloading }
 
     public State state { get; private set; }
 
-    public ProjectileData weaponData;
-    private Animator gunAnim;
+    public GunData gunData;
+    private Animator gunAnimator;
     private RaycastHit hit;
 
     // HUD : ¿‹ø© ≈∫æ‡ / √÷¥Î ≈∫æ‡
@@ -35,25 +36,25 @@ public class Gun : MonoBehaviour
 
     private void Awake()
     {
-        gunAnim = GetComponent<Animator>();
+        gunAnimator = GetComponent<Animator>();
         gunAudioSource = GetComponent<AudioSource>();
     }
 
     private void OnEnable()
     {
-        magAmmo = weaponData.magCapacity;
+        magAmmo = gunData.magCapacity;
         state = State.Ready;
         lastFireTime = 0;
     }
 
     public void Fire()
     {
-        if (state == State.Ready && Time.time >= lastFireTime + weaponData.timeBetFire)
+        if (state == State.Ready && Time.time >= lastFireTime + gunData.timeBetFire)
         {
             lastFireTime = Time.time;
             Shot();
 
-            gunAnim.SetTrigger("Fire");
+            gunAnimator.SetTrigger("Fire");
         }
     }
 
@@ -65,10 +66,10 @@ public class Gun : MonoBehaviour
             Camera.main.transform.forward, out hit, fireRange))
         {
             IDamagable damagable = hit.transform.GetComponent<IDamagable>();
-            damagable?.TakeDamage(weaponData.damage);
+            damagable?.OnDamage(gunData.damage);
 
             IBulletTakable bulletTakable = hit.transform.GetComponent<IBulletTakable>();
-            bulletTakable?.TakeBullet(hit.point, hit.normal, weaponData.bulletForce);
+            bulletTakable?.TakeBullet(hit.point, hit.normal, gunData.bulletForce);
         }
 
         StartCoroutine(ShotEffect(hitPosition));
@@ -86,19 +87,19 @@ public class Gun : MonoBehaviour
     {
         muzzleFlash.Play();
         shellEject.Play();
-        gunAudioSource.PlayOneShot(weaponData.shotClip);
+        gunAudioSource.PlayOneShot(gunData.shotClip);
 
         yield return new WaitForSeconds(0.03f);
     }
 
     public bool Reload()
     {
-        if (state == State.Reloading || magAmmo >= weaponData.magCapacity)
+        if (state == State.Reloading || magAmmo >= gunData.magCapacity)
         {
             return false;
         }
 
-        gunAnim.SetTrigger("Reload");
+        gunAnimator.SetTrigger("Reload");
 
         StartCoroutine(ReloadCoroutine());
         return true;
@@ -107,11 +108,11 @@ public class Gun : MonoBehaviour
     private IEnumerator ReloadCoroutine()
     {
         state = State.Reloading;
-        gunAudioSource.PlayOneShot(weaponData.reloadClip);
+        gunAudioSource.PlayOneShot(gunData.reloadClip);
 
-        yield return new WaitForSeconds(weaponData.reloadTime);
+        yield return new WaitForSeconds(gunData.reloadTime);
 
-        int ammoToFill = weaponData.magCapacity - magAmmo;
+        int ammoToFill = gunData.magCapacity - magAmmo;
         magAmmo += ammoToFill;
         state = State.Ready;
     }

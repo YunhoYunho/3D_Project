@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // 초기 설정 값
-[CreateAssetMenu(menuName = "Weapon/ProjectileData", fileName = "_Data")]
-public class ProjectileData : ScriptableObject
+[CreateAssetMenu(menuName = "Weapon/GunData", fileName = "_Data")]
+public class GunData : ScriptableObject
 {
     public AudioClip shotClip;
     public AudioClip reloadClip;

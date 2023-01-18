@@ -11,7 +11,6 @@ public class Gun : MonoBehaviour
 
     public GunData gunData;
     private Animator gunAnimator;
-    private RaycastHit hit;
 
     // HUD : ¿‹ø© ≈∫æ‡ / √÷¥Î ≈∫æ‡
     [Header("Spec")]
@@ -21,6 +20,8 @@ public class Gun : MonoBehaviour
     private float fireRange;
     [SerializeField]
     private float lastFireTime;
+    [SerializeField]
+    private Transform firePosition;
 
     [Header("Effect")]
     [SerializeField]
@@ -31,8 +32,6 @@ public class Gun : MonoBehaviour
     private ParticleSystem muzzleFlash;
     [SerializeField]
     private ParticleSystem shellEject;
-    [SerializeField]
-    private GameObject hitEffectPrefab;
 
     private void Awake()
     {
@@ -62,20 +61,25 @@ public class Gun : MonoBehaviour
     {
         RaycastHit hit;
         Vector3 hitPosition = Vector3.zero;
-        if (Physics.Raycast(Camera.main.transform.position,
-            Camera.main.transform.forward, out hit, fireRange))
+        if (Physics.Raycast(firePosition.transform.position,
+            firePosition.transform.forward, out hit, gunData.range))
         {
-            IDamagable damagable = hit.transform.GetComponent<IDamagable>();
-            damagable?.OnDamage(gunData.damage);
+            IDamageable target = hit.collider.GetComponent<IDamageable>();
 
-            IBulletTakable bulletTakable = hit.transform.GetComponent<IBulletTakable>();
-            bulletTakable?.TakeBullet(hit.point, hit.normal, gunData.bulletForce);
+            if (target != null)
+            {
+                target.OnDamage(gunData.damage, hit.point, hit.normal);
+            }
+
+            hitPosition = hit.point;
+        }
+        else
+        {
+            hitPosition = firePosition.position + firePosition.forward * gunData.range;
         }
 
-        StartCoroutine(ShotEffect(hitPosition));
+        StartCoroutine(ShotEffectCoroutine(hitPosition));
 
-        StopAllCoroutines();
-        
         magAmmo--;
         if (magAmmo <= 0)
         {
@@ -83,7 +87,7 @@ public class Gun : MonoBehaviour
         }
     }
 
-    private IEnumerator ShotEffect(Vector3 hitPosition)
+    private IEnumerator ShotEffectCoroutine(Vector3 hitPosition)
     {
         muzzleFlash.Play();
         shellEject.Play();

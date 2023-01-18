@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
 {
     private CharacterController controller;
     private Animator playerAnimator;
-    private PlayerInput playerInput;
+    private CrosshairUI crosshairUI;
 
     private float moveY = 0;
     private float originPosY;
@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour
     private float applySpeed;
 
     private bool isGround = true;
+    private bool isJumping = false;
     private bool isCrouch = false;
 
     [Header("General")]
@@ -43,7 +44,7 @@ public class PlayerController : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
         playerAnimator = GetComponent<Animator>();
-        playerInput = GetComponent<PlayerInput>();
+        crosshairUI = FindObjectOfType<CrosshairUI>();
     }
 
     private void Start()
@@ -65,12 +66,13 @@ public class PlayerController : MonoBehaviour
     private void IsGround()
     {
         isGround = Physics.Raycast(transform.position, Vector3.down, controller.bounds.extents.y + 0.1f);
+        crosshairUI.Jumping(!isGround);
     }
 
     private void Move()
     {
-        controller.Move(transform.forward * playerInput.move * moveSpeed * Time.deltaTime);
-        controller.Move(transform.right * playerInput.rotate * moveSpeed * Time.deltaTime);
+        controller.Move(transform.forward * InputManager.Instance.move * moveSpeed * Time.deltaTime);
+        controller.Move(transform.right * InputManager.Instance.rotate * moveSpeed * Time.deltaTime);
     }
 
     private void TryJump()
@@ -83,8 +85,11 @@ public class PlayerController : MonoBehaviour
 
     private void Jump()
     {
-        if (playerInput.jump && isGround)
+        if (InputManager.Instance.jump && isGround)
+        {
             moveY = jumpPower;
+            crosshairUI.Jumping(isJumping);
+        }
         else if (controller.isGrounded)
             moveY = 0;
         else
@@ -95,7 +100,7 @@ public class PlayerController : MonoBehaviour
 
     private void TryCrouch()
     {
-        if (playerInput.crouch)
+        if (InputManager.Instance.crouch)
         {
             Crouch();
         }
@@ -104,6 +109,7 @@ public class PlayerController : MonoBehaviour
     private void Crouch()
     {
         isCrouch = !isCrouch;
+        crosshairUI.Crouching(isCrouch);
 
         if (isCrouch)
         {
@@ -120,7 +126,7 @@ public class PlayerController : MonoBehaviour
         StartCoroutine(CrouchCoroutine());
     }
 
-    IEnumerator CrouchCoroutine()
+    private IEnumerator CrouchCoroutine()
     {
         float posY = Camera.main.transform.localPosition.y;
         int count = 0;
@@ -141,7 +147,7 @@ public class PlayerController : MonoBehaviour
 
     private void InterAction()
     {
-        if (playerInput.interAction)
+        if (InputManager.Instance.interAction)
             return;
 
         Collider[] colliders = Physics.OverlapSphere(

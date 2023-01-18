@@ -3,33 +3,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Unit : MonoBehaviour, IDamagable
+public class Unit : MonoBehaviour, IDamageable
 {
-    public float defaultHP = 100f;
-
+    public float initHP = 200.0f;
     public float hp { get; protected set; }
-
     public bool dead { get; protected set; }
-
     public event Action onDeath;
 
     protected virtual void OnEnable()
     {
         dead = false;
-        hp = defaultHP;
+        hp = initHP;
     }
 
-    public virtual void TakeDamage(int damage)
+    public virtual void OnDamage(float damage, Vector3 hitPoint, Vector3 hitNormal)
     {
         hp -= damage;
 
-        if (hp <=0 && !dead)
+        if (hp <= 0 && !dead)
         {
-            Dead();
+            Die();
         }
     }
 
-    public virtual void RestoreHP(int restoreHP)
+    public virtual void RestoreHP(float restoreHP)
     {
         if (dead)
         {
@@ -39,7 +36,7 @@ public class Unit : MonoBehaviour, IDamagable
         hp += restoreHP;
     }
 
-    public virtual void Dead()
+    public virtual void Die()
     {
         if (onDeath != null)
         {
@@ -48,4 +45,5 @@ public class Unit : MonoBehaviour, IDamagable
 
         dead = true;
     }
+
 }

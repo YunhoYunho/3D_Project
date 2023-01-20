@@ -41,6 +41,7 @@ public class PlayerHealth : Unit
         base.RestoreHP(restoreHP);
 
         UIManager.Instance.healthSlider.value = hp;
+        UIManager.Instance.HealthTextUI(hp, playerData.hp);
     }
 
     public override void OnDamage(float damage, Vector3 hitPoint, Vector3 hitNormal)
@@ -53,13 +54,12 @@ public class PlayerHealth : Unit
         base.OnDamage(damage, hitPoint, hitNormal);
 
         UIManager.Instance.healthSlider.value = hp;
+        UIManager.Instance.HealthTextUI(hp, playerData.hp);
     }
 
     public override void Die()
     {
         base.Die();
-
-        UIManager.Instance.healthSlider.gameObject.SetActive(false);
 
         controller.enabled = false;
         shooter.enabled = false;

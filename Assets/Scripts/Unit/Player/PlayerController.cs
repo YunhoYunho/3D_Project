@@ -7,7 +7,6 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     private CharacterController controller;
-    private Animator playerAnimator;
     private CrosshairUI crosshairUI;
 
     private float moveY = 0;
@@ -43,7 +42,6 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
-        playerAnimator = GetComponent<Animator>();
         crosshairUI = FindObjectOfType<CrosshairUI>();
     }
 
@@ -147,23 +145,22 @@ public class PlayerController : MonoBehaviour
 
     private void InterAction()
     {
-        if (InputManager.Instance.interAction)
+        if (!InputManager.Instance.interAction)
             return;
 
         Collider[] colliders = Physics.OverlapSphere(
             transform.position, interActionRange);
         for (int i = 0; i < colliders.Length; i++)
         {
-            Vector3 dirToTarget =
-                (colliders[i].transform.position - transform.position).normalized;
-            Vector3 rightDir = AngleToDir(transform.eulerAngles.y + interActionAngle * 0.5f);
+            Vector3 dirToTarget = (
+                colliders[i].transform.position - transform.position).normalized;
 
-            if (Vector3.Dot(transform.forward, dirToTarget) >
-                Vector3.Dot(transform.forward, rightDir))
-            {
-                IInteractable target = colliders[i].GetComponent<IInteractable>();
-                target?.InterAction(this);
-            }
+            if (Vector3.Dot(transform.forward, dirToTarget) < 
+                Mathf.Cos(interActionAngle * 0.5f * Mathf.Deg2Rad))
+                continue;
+
+            IInteractable target = colliders[i].GetComponent<IInteractable>();
+            target?.InterAction(this);
         }
     }
 

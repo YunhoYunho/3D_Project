@@ -7622,7 +7622,6 @@ MonoBehaviour:
   gunAudioSource: {fileID: 0}
   muzzleFlash: {fileID: 5707255267346578949}
   shellEject: {fileID: 5707255267563582351}
-  hitEffectPrefab: {fileID: 0}
 --- !u!82 &5241775519481543159
 AudioSource:
   m_ObjectHideFlags: 0
@@ -7742,14 +7741,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5707255266864087828}
-  m_LocalRotation: {x: -0.2526349, y: 0.6686582, z: 0.00016641615, w: -0.6993368}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.0999999, y: 0.09999998, z: 0.100000046}
+  m_LocalRotation: {x: 0.58544, y: 0.12744525, z: -0.7915222, w: 0.12045883}
+  m_LocalPosition: {x: -0.028482175, y: -0.006874321, z: 0.0030470577}
+  m_LocalScale: {x: 0.09999997, y: 0.1, z: 0.09999999}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5707255265784550343}
-  m_Father: {fileID: 5707255267338790418}
-  m_RootOrder: 10
+  m_Father: {fileID: 5707255266865082161}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5707255266865082158
 GameObject:
@@ -7780,6 +7779,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5707255266102561827}
+  - {fileID: 5707255266864087831}
   m_Father: {fileID: 5707255266742780037}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -8769,7 +8769,6 @@ Transform:
   - {fileID: 5707255267167137683}
   - {fileID: 5707255266033244324}
   - {fileID: 5707255265788795808}
-  - {fileID: 5707255266864087831}
   m_Father: {fileID: 5707255266102561827}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

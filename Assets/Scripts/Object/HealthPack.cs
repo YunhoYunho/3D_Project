@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class HealthPack : MonoBehaviour, IItem
 {
-    public HealthPackData data;
+    [SerializeField]
+    private HealthPackData data;
 
-    public Player player;
     public void Use(GameObject item)
     {
-        Player hp = item.GetComponent<Player>();
+        PlayerHealth hp = item.GetComponent<PlayerHealth>();
 
         if (hp != null)
         {

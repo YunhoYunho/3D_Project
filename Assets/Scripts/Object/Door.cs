@@ -13,12 +13,5 @@ public class Door : MonoBehaviour
     public void Touch()
     {
         animator.SetTrigger(hashTouch);
-        Debug.Log(string.Format("{0}이 열림.", gameObject.name));
-    }
-
-    public void Goal()
-    {
-        Debug.Log(string.Format("{0}에 도착함.", gameObject.name));
-        GameManager.Instance.SecondScene();
     }
 }

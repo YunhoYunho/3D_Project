@@ -135,7 +135,7 @@ public class PlayerController : MonoBehaviour
             posY = Mathf.Lerp(posY, applyCrouchPosY, 0.2f);
             Camera.main.transform.localPosition = new Vector3(0, posY, 0);
 
-            if (count > 15)
+            if (count > 30)
                 break;
             yield return null;
         }

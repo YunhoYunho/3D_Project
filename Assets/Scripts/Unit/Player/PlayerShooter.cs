@@ -9,8 +9,6 @@ public class PlayerShooter : MonoBehaviour
     private GunData gunData;
     [SerializeField]
     private Gun gun;
-    [SerializeField]
-    private GameObject hitEffect;
 
     private void Update()
     {

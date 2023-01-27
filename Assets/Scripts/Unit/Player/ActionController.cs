@@ -8,12 +8,6 @@ public class ActionController : MonoBehaviour
     private RaycastHit hitInfo;
 
     [SerializeField]
-    private TextMeshProUGUI doorOpenText;
-
-    [SerializeField]
-    private TextMeshProUGUI doorGoalText;
-
-    [SerializeField]
     private float range;
 
     [SerializeField]
@@ -40,18 +34,26 @@ public class ActionController : MonoBehaviour
     {
         if (hitInfo.transform.tag == "Door")
         {
-            doorOpenText.gameObject.SetActive(true);
+            UIManager.Instance.doorOpenText.gameObject.SetActive(true);
         }
 
         if (hitInfo.transform.tag == "Goal")
         {
-            doorGoalText.gameObject.SetActive(true);
+            if (GameManager.Instance.isKeyEnough == true)
+            {
+                UIManager.Instance.winnerText.gameObject.SetActive(true);
+            }
+
+            else if (GameManager.Instance.isKeyEnough == false)
+            {
+                UIManager.Instance.notEnoughKeyText.gameObject.SetActive(true);
+            }
         }
     }
 
     private void DoorTextDisAppear()
     {
-        doorOpenText.gameObject.SetActive(false);
-        doorGoalText.gameObject.SetActive(false);
+        UIManager.Instance.doorOpenText.gameObject.SetActive(false);
+        UIManager.Instance.notEnoughKeyText.gameObject.SetActive(false);
     }
 }

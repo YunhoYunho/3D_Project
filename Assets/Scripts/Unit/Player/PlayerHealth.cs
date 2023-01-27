@@ -28,7 +28,6 @@ public class PlayerHealth : Unit
     {
         base.OnEnable();
 
-        UIManager.Instance.healthSlider.gameObject.SetActive(true);
         UIManager.Instance.healthSlider.maxValue = playerData.hp;
         UIManager.Instance.healthSlider.value = hp;
 

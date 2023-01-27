@@ -45,5 +45,4 @@ public class Unit : MonoBehaviour, IDamageable
 
         dead = true;
     }
-
 }

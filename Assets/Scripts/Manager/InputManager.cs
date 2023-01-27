@@ -26,8 +26,6 @@ public class InputManager : SingleTon<InputManager>
     public float mouseX { get; private set; }
     public float mouseY { get; private set; }
     public bool interAction { get; private set; }
-    public bool weaponSlot1 { get; private set; }
-    public bool weaponSlot2 { get; private set; }
     public bool pause { get; private set; }
 
     private void Update()
@@ -45,8 +43,6 @@ public class InputManager : SingleTon<InputManager>
             mouseX = 0;
             mouseY = 0;
             interAction = false;
-            weaponSlot1 = false;
-            weaponSlot2 = false;
             pause = false;
             return;
         }
@@ -61,8 +57,6 @@ public class InputManager : SingleTon<InputManager>
         mouseX = Input.GetAxis(mouseXAxisName);
         mouseY = Input.GetAxis(mouseYAxisName);
         interAction = Input.GetButtonDown(interActionButtonName);
-        weaponSlot1 = Input.GetKeyDown(KeyCode.Alpha1);
-        weaponSlot2 = Input.GetKeyDown(KeyCode.Alpha2);
         pause = Input.GetButtonDown(pauseButtonName);
     }
 }

@@ -5,9 +5,13 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : SingleTon<GameManager>
 {
-    public bool IsGameover { get; private set; } // 게임 오버 상태
+    public bool IsGameover { get; private set; }
     public static bool isPause = false;
     public bool canPlayerMove = true;
+    public bool isKeyEnough = false;
+
+    public int curKey = 0;
+    public int maxKey = 3;
 
     private void Start()
     {
@@ -18,16 +22,30 @@ public class GameManager : SingleTon<GameManager>
     {
         if (isPause)
         {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-
-            canPlayerMove = false;
+            Pause();
         }
 
-        else
+        if (IsGameover)
         {
-
+            Gameover();
         }
+    }
+
+    public void Gameover()
+    {
+        IsGameover = true;
+        UIManager.Instance.GameoverUI(true);
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+
+    public void Pause()
+    {
+        Time.timeScale = 0f;
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        canPlayerMove = false;
     }
 
     public void Resume()
@@ -35,25 +53,27 @@ public class GameManager : SingleTon<GameManager>
         Time.timeScale = 1f;
     }
 
-    public void Pause()
-    {
-        Time.timeScale = 0f;
-    }
-
-    public void Gameover()
-    {
-        Pause();
-        IsGameover = true;
-        UIManager.Instance.GameoverUI(true);
-    }
-
     public void GameRestart()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    public void SecondScene()
+    public void Exit()
     {
-        SceneManager.LoadScene("Sector2");
+        Application.Quit();
+    }
+
+    public void Key(int getKey)
+    {
+        if (!IsGameover)
+        {
+            curKey += getKey;
+            UIManager.Instance.KeyText(curKey, maxKey);
+
+            if (curKey == maxKey)
+            {
+                isKeyEnough = true;
+            }
+        }
     }
 }

@@ -7,19 +7,16 @@ public class CrosshairUI : MonoBehaviour
     [SerializeField]
     private Animator animator;
 
-    [SerializeField]
-    private GameObject crosshairHUD;
-
-    [SerializeField]
-    private Gun gun;
+    private readonly int hashJump = Animator.StringToHash("Jumping");
+    private readonly int hashCrouch = Animator.StringToHash("Crouching");
 
     public void Jumping(bool flag)
     {
-        animator.SetBool("Jumping", flag);
+        animator.SetBool(hashJump, flag);
     }
 
     public void Crouching(bool flag)
     {
-        animator.SetBool("Crouching", flag);
+        animator.SetBool(hashCrouch, flag);
     }
 }

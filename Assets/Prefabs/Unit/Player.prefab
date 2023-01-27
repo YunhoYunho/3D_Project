@@ -15844,6 +15844,7 @@ GameObject:
   - component: {fileID: 611872197330376507}
   - component: {fileID: 611872197330376504}
   - component: {fileID: 611872197330376505}
+  - component: {fileID: 1724698654}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -15951,6 +15952,20 @@ MonoBehaviour:
   gunData: {fileID: 11400000, guid: d73183a2dc54dcc48b21a57abb13c6fa, type: 2}
   gun: {fileID: 1272365090}
   hitEffect: {fileID: 0}
+--- !u!136 &1724698654
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 611872197330376510}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.3
+  m_Height: 1.8
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &611872197575191911
 GameObject:
   m_ObjectHideFlags: 0
@@ -16118,7 +16133,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 1000
+  far clip plane: 100
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -16165,9 +16180,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afa7e6a8cd1036346a538c02133617f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  doorOpenText: {fileID: 0}
-  doorGoalText: {fileID: 0}
-  notEnoughText: {fileID: 0}
   range: 3
   layerMask:
     serializedVersion: 2
@@ -17114,7 +17126,7 @@ MonoBehaviour:
   magAmmo: 0
   fireRange: 0
   lastFireTime: 0
-  firePosition: {fileID: 0}
+  firePosition: {fileID: 611872198401135516}
   gunAudioSource: {fileID: 0}
   muzzleFlash: {fileID: 1726559697}
   shellEject: {fileID: 774906118}

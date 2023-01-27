@@ -1,5 +1,51 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &826040677
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 826040678}
+  - component: {fileID: 826040679}
+  m_Layer: 6
+  m_Name: Collider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &826040678
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826040677}
+  m_LocalRotation: {x: 0.76604444, y: 0, z: 0, w: 0.64278764}
+  m_LocalPosition: {x: 0, y: -0.34, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2631875755146819139}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 100, y: 0, z: 0}
+--- !u!136 &826040679
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 826040677}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 0
+  m_Radius: 0.0614
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: -0.1425974, y: 0.54, z: -0.386}
 --- !u!1 &2485299364539916803
 GameObject:
   m_ObjectHideFlags: 0
@@ -11,7 +57,6 @@ GameObject:
   - component: {fileID: 8236186162067983755}
   - component: {fileID: 1174192169485115006}
   - component: {fileID: 869506382524186606}
-  - component: {fileID: 589750358}
   - component: {fileID: 589750359}
   m_Layer: 6
   m_Name: Warrior
@@ -72,27 +117,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   initHP: 100
   state: 0
+  sword: {fileID: 978250751}
   enemyData: {fileID: 11400000, guid: 1798c64f7516d024bab8f512ba3d1d1d, type: 2}
   hitEffect: {fileID: 0}
   hitClip: {fileID: 0}
   deathClip: {fileID: 0}
-  damage: 20
   traceDist: 10
   attackDist: 3.5
+  damage: 20
   timeBetAttack: 0.5
---- !u!114 &589750358
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2485299364539916803}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f5b5d7c1f9da50048bdc3f3c9a06be79, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  returnTime: 3
+  showAttackGizmos: 1
+  attackRange: 2.2
+  attackAngle: 90
 --- !u!136 &589750359
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1592,6 +1628,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2eaf0f68e66ad42cc866bd3730895eaa, type: 3}
+--- !u!4 &2631875755146819139 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -3278585304175268276, guid: 2eaf0f68e66ad42cc866bd3730895eaa, type: 3}
+  m_PrefabInstance: {fileID: 8504604824454305807}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &6141837071010246981 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -6684928162162792118, guid: 2eaf0f68e66ad42cc866bd3730895eaa, type: 3}
@@ -1640,3 +1681,60 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &246720857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8847045312991274334}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ace12c644e934c843839596a33a23c66, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnAttackStart:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 869506382524186606}
+        m_TargetAssemblyTypeName: Warrior, Assembly-CSharp
+        m_MethodName: OnAttackStart
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  OnAttackHit:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 869506382524186606}
+        m_TargetAssemblyTypeName: Warrior, Assembly-CSharp
+        m_MethodName: OnAttackHit
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  OnAttackEnd:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 869506382524186606}
+        m_TargetAssemblyTypeName: Warrior, Assembly-CSharp
+        m_MethodName: OnAttackEnd
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2

@@ -8,6 +8,8 @@ TagManager:
   - Enemy
   - Monster
   - Door
+  - Goal
+  - Key
   layers:
   - Default
   - TransparentFX
@@ -20,8 +22,8 @@ TagManager:
   - Gun
   - Patrol Point
   - Door
-  - 
-  - 
+  - Goal
+  - Key
   - 
   - 
   - 

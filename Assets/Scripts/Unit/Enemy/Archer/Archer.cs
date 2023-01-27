@@ -20,9 +20,10 @@ public class Archer : Unit
     private AudioSource audioSource;
     private Transform enemyTransform;
     private Transform playerTransform;
-    public ArcherState state;
 
     [Header("Archer")]
+    [SerializeField]
+    private ArcherState state;
     [SerializeField]
     private EnemyData enemyData;
     [SerializeField]
@@ -144,13 +145,6 @@ public class Archer : Unit
 
                 case ArcherState.DIE:
                     Die();
-
-                    yield return new WaitForSeconds(3.0f);
-
-                    hp = 100;
-                    dead = false;
-                    state = ArcherState.IDLE;
-                    gameObject.SetActive(false);
                     break;
             }
             yield return new WaitForSeconds(0.3f);

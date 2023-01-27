@@ -7,5 +7,5 @@ public class EnemyData : ScriptableObject
 {
     public float hp = 100f;
     public float damage = 20.0f;
-    public float speed = 2f;
+    public float speed = 2.0f;
 }

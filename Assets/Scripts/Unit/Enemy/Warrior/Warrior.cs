@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Burst.CompilerServices;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -21,9 +20,10 @@ public class Warrior : Unit
     private AudioSource audioSource;
     private Transform enemyTransform;
     private Transform playerTransform;
-    public WarriorState state;
 
     [Header("Warrior")]
+    [SerializeField]
+    private WarriorState state;
     [SerializeField]
     private Sword sword;
     [SerializeField]
@@ -153,13 +153,6 @@ public class Warrior : Unit
 
                 case WarriorState.DIE:
                     Die();
-
-                    yield return new WaitForSeconds(3.0f);
-
-                    hp = 100;
-                    dead = false;
-                    state = WarriorState.IDLE;
-                    gameObject.SetActive(false);
                     break;
             }
             yield return new WaitForSeconds(0.3f);

@@ -3,9 +3,15 @@ using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
-public class Warrior : Unit
+public class Enemy : Unit
 {
-    public enum WarriorState
+    public enum Type
+    {
+        Mousey,
+        Doozy
+    }
+
+    public enum State
     {
         IDLE,
         PATROL,
@@ -20,11 +26,11 @@ public class Warrior : Unit
     private Transform enemyTransform;
     private Transform playerTransform;
 
-    [Header("Warrior")]
+    [Header("General")]
     [SerializeField]
-    private WarriorState state;
+    private Type type;
     [SerializeField]
-    private Sword sword;
+    private State state;
     [SerializeField]
     private EnemyData enemyData;
     [SerializeField]
@@ -34,16 +40,19 @@ public class Warrior : Unit
     [SerializeField]
     private AudioClip deathClip;
     [SerializeField]
-    private float traceDist = 10.0f;
-    [SerializeField]
-    private float attackDist = 5.0f;
-    [SerializeField]
     [Range(0f, 200f)]
     private float damage = 20.0f;
     [SerializeField]
+    private float traceDist;
+    [SerializeField]
+    private float attackDist;
+
+    [Header("Mousey")]
+    [SerializeField]
+    private Sword sword;
+    [SerializeField]
     private float timeBetAttack = 0.5f;
     private float lastAttackTime;
-
     [Header("AttackRange")]
     [SerializeField]
     private bool showAttackGizmos;
@@ -52,9 +61,16 @@ public class Warrior : Unit
     [SerializeField, Range(0f, 360f)]
     private float attackAngle;
 
-    // 애니메이터 컨트롤 -> 해시테이블로 관리
-    // 문자열 호출 -> 내부 해시테이블 검색 -> 속도 저하
-    // 미리 추출 -> 인자값 -> 속도 상승
+    [Header("Archer")]
+    [SerializeField]
+    private Transform firePosition;
+    [SerializeField]
+    private GameObject Arrow;
+    [SerializeField]
+    private float nextFire = 0.0f;
+    [SerializeField]
+    private float fireRate = 1.0f;
+
     private readonly int hashTrace = Animator.StringToHash("IsTrace");
     private readonly int hashAttack = Animator.StringToHash("IsAttack");
     private readonly int hashHit = Animator.StringToHash("Hit");
@@ -66,6 +82,8 @@ public class Warrior : Unit
         hp = enemyData.hp;
         damage = enemyData.damage;
         agent.speed = enemyData.speed;
+        traceDist = enemyData.traceDist;
+        attackDist = enemyData.attackDist;
     }
 
     private void Awake()
@@ -106,24 +124,24 @@ public class Warrior : Unit
         {
             yield return new WaitForSeconds(0.3f);
 
-            if (state == WarriorState.DIE)
+            if (state == State.DIE)
                 yield break;
 
             float dist = Vector3.Distance(playerTransform.position, enemyTransform.position);
 
             if (dist <= attackDist)
             {
-                state = WarriorState.ATTACK;
+                state = State.ATTACK;
             }
 
             else if (dist <= traceDist)
             {
-                state = WarriorState.TRACE;
+                state = State.TRACE;
             }
 
             else
             {
-                state = WarriorState.IDLE;
+                state = State.PATROL;
             }
         }
     }
@@ -132,32 +150,69 @@ public class Warrior : Unit
     {
         while (!dead)
         {
-            switch (state)
+            switch (type)
             {
-                case WarriorState.IDLE:
-                    agent.isStopped = true;
-                    animator.SetBool(hashTrace, false);
-                    break;
+                case Type.Mousey:
+                    switch (state)
+                    {
+                        case State.IDLE:
+                            IdleState();
+                            break;
 
-                case WarriorState.TRACE:
-                    agent.SetDestination(playerTransform.position);
-                    agent.isStopped = false;
-                    animator.SetBool(hashTrace, true);
-                    animator.SetBool(hashAttack, false);
-                    break;
+                        case State.TRACE:
+                            TraceState();
+                            break;
 
-                case WarriorState.ATTACK:
-                    Attack();
-                    break;
+                        case State.ATTACK:
+                            Attack();
+                            break;
 
-                case WarriorState.DIE:
-                    Die();
+                        case State.DIE:
+                            Die();
+                            break;
+                    }
+                    yield return new WaitForSeconds(0.3f);
+                    break;
+                case Type.Doozy:
+                    switch (state)
+                    {
+                        case State.IDLE:
+                            IdleState();
+                            break;
+
+                        case State.TRACE:
+                            TraceState();
+                            break;
+
+                        case State.ATTACK:
+                            Shot();
+                            break;
+
+                        case State.DIE:
+                            Die();
+                            break;
+                    }
+                    yield return new WaitForSeconds(0.3f);
                     break;
             }
-            yield return new WaitForSeconds(0.3f);
         }
     }
 
+    private void IdleState()
+    {
+        agent.isStopped = true;
+        animator.SetBool(hashTrace, false);
+    }
+
+    private void TraceState()
+    {
+        agent.SetDestination(playerTransform.position);
+        agent.isStopped = false;
+        animator.SetBool(hashTrace, true);
+        animator.SetBool(hashAttack, false);
+    }
+
+    #region Mousey
     private void Attack()
     {
         agent.isStopped = true;
@@ -179,7 +234,7 @@ public class Warrior : Unit
         {
             Vector3 dirToTarget =
                 (colliders[i].transform.position - transform.position).normalized;
-            Vector3 rightDir = 
+            Vector3 rightDir =
                 AngleToDir(transform.eulerAngles.y + attackAngle * 0.5f);
 
             if (Vector3.Dot(transform.forward, dirToTarget) >
@@ -208,13 +263,40 @@ public class Warrior : Unit
         Debug.Log("공격 끝!");
         sword.DisableCollider();
     }
+    #endregion
 
+    #region Doozy
+    private void Shot()
+    {
+        agent.isStopped = true;
+
+        if (Time.time >= nextFire)
+        {
+            Fire();
+
+            nextFire = Time.time + fireRate + Random.Range(0.0f, 0.3f);
+        }
+    }
+
+    private void Fire()
+    {
+        animator.SetTrigger(hashAttack);
+
+        GameObject arrow = Instantiate(Arrow, firePosition.position, firePosition.rotation);
+        Destroy(arrow, 3.0f);
+    }
+    #endregion
 
     public override void OnDamage(float damage, Vector3 hitPoint, Vector3 hitNormal)
     {
         if (!dead)
         {
             animator.SetTrigger(hashHit);
+
+            hitEffect.transform.position = hitPoint;
+            hitEffect.transform.rotation = Quaternion.LookRotation(hitNormal);
+            hitEffect.Play();
+
             audioSource.PlayOneShot(hitClip);
         }
 
@@ -236,6 +318,7 @@ public class Warrior : Unit
 
         animator.SetTrigger(hashDie);
         audioSource.PlayOneShot(deathClip);
+        Debug.Log("죽음!");
     }
 
     private void OnTriggerStay(Collider other)

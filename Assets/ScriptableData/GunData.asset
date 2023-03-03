@@ -9,9 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa3dd2347154814498e6eabb271b9927, type: 3}
-  m_Name: Enemy Data
+  m_Script: {fileID: 11500000, guid: 61d499f2afac8834ca0942003821d56f, type: 3}
+  m_Name: GunData
   m_EditorClassIdentifier: 
-  hp: 100
-  damage: 20
-  speed: 2
+  shotClip: {fileID: 0}
+  reloadClip: {fileID: 0}
+  damage: 25
+  range: 200
+  timeBetFire: 0.12
+  reloadTime: 1.8
+  bulletForce: 1
+  initAmmo: 100
+  magCapacity: 30

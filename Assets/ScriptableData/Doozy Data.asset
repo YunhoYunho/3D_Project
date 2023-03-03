@@ -9,16 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61d499f2afac8834ca0942003821d56f, type: 3}
-  m_Name: Gun Data
+  m_Script: {fileID: 11500000, guid: fa3dd2347154814498e6eabb271b9927, type: 3}
+  m_Name: Doozy Data
   m_EditorClassIdentifier: 
-  shotClip: {fileID: 0}
-  reloadClip: {fileID: 0}
-  gunName: 
-  damage: 25
-  bulletForce: 1
-  timeBetFire: 0.12
-  reloadTime: 1.8
-  recoilForce: 30
-  defaultAmmo: 90
-  magCapacity: 30
+  hp: 100
+  damage: 20
+  speed: 2
+  traceDist: 60
+  attackDist: 40

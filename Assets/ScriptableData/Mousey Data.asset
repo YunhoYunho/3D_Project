@@ -10,8 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fa3dd2347154814498e6eabb271b9927, type: 3}
-  m_Name: Archer Data
+  m_Name: Mousey Data
   m_EditorClassIdentifier: 
-  hp: 100
-  damage: 20
+  hp: 150
+  damage: 30
   speed: 2
+  traceDist: 30
+  attackDist: 20

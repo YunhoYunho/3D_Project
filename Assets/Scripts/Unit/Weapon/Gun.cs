@@ -8,16 +8,25 @@ public class Gun : MonoBehaviour
     public State state { get; private set; }
     private Animator gunAnimator;
 
-    [Header("Spec")]
+    [Space]
+
+    [Header("Data")]
     [SerializeField]
     private GunData gunData;
+    [SerializeField]
+    private Transform firePosition;
+
+    [Space]
+    
+    [Header("Spec")]
     public int magAmmo;
+    public int ammoRemain;
     [SerializeField]
     private float fireRange;
     [SerializeField]
     private float lastFireTime;
-    [SerializeField]
-    private Transform firePosition;
+
+    [Space]
 
     [Header("Effect")]
     [SerializeField]
@@ -26,7 +35,9 @@ public class Gun : MonoBehaviour
     private ParticleSystem muzzleFlash;
     [SerializeField]
     private ParticleSystem shellEject;
-
+    [SerializeField]
+    private LineRenderer lineRenderer; 
+    
     private readonly int hashFire = Animator.StringToHash("Fire");
     private readonly int hashReload = Animator.StringToHash("Reload");
 
@@ -34,10 +45,15 @@ public class Gun : MonoBehaviour
     {
         gunAnimator = GetComponent<Animator>();
         gunAudioSource = GetComponent<AudioSource>();
+        lineRenderer = GetComponent<LineRenderer>();
+
+        lineRenderer.positionCount = 2;
+        lineRenderer.enabled = false;
     }
 
     private void OnEnable()
     {
+        ammoRemain = gunData.initAmmo;
         magAmmo = gunData.magCapacity;
         state = State.Ready;
         lastFireTime = 0;
@@ -58,8 +74,9 @@ public class Gun : MonoBehaviour
     {
         RaycastHit hit;
         Vector3 hitPosition = Vector3.zero;
-        if (Physics.Raycast(firePosition.transform.position,
-            firePosition.transform.forward, out hit, gunData.range))
+
+        if (Physics.Raycast(firePosition.position,
+            firePosition.forward, out hit, gunData.range))
         {
             IDamageable target = hit.collider.GetComponent<IDamageable>();
             IBulletTakable bulletTakable = hit.transform.GetComponent<IBulletTakable>();
@@ -77,7 +94,7 @@ public class Gun : MonoBehaviour
             hitPosition = firePosition.position + firePosition.forward * gunData.range;
         }
 
-        StartCoroutine(ShotEffectCoroutine());
+        StartCoroutine(ShotEffectCoroutine(hitPosition));
 
         magAmmo--;
         if (magAmmo <= 0)
@@ -86,18 +103,24 @@ public class Gun : MonoBehaviour
         }
     }
 
-    private IEnumerator ShotEffectCoroutine()
+    private IEnumerator ShotEffectCoroutine(Vector3 hitPosition)
     {
         muzzleFlash.Play();
         shellEject.Play();
         gunAudioSource.PlayOneShot(gunData.shotClip);
 
+        lineRenderer.SetPosition(0, firePosition.position);
+        lineRenderer.SetPosition(1, hitPosition);
+        lineRenderer.enabled = true;
+
         yield return new WaitForSeconds(0.03f);
+
+        lineRenderer.enabled = false;
     }
 
     public bool Reload()
     {
-        if (state == State.Reloading || magAmmo >= gunData.magCapacity)
+        if (state == State.Reloading || ammoRemain <= 0 || magAmmo >= gunData.magCapacity)
         {
             return false;
         }
@@ -105,6 +128,7 @@ public class Gun : MonoBehaviour
         gunAnimator.SetTrigger(hashReload);
 
         StartCoroutine(ReloadCoroutine());
+
         return true;
     }
 
@@ -116,7 +140,15 @@ public class Gun : MonoBehaviour
         yield return new WaitForSeconds(gunData.reloadTime);
 
         int ammoToFill = gunData.magCapacity - magAmmo;
+
+        if (ammoRemain < ammoToFill)
+        {
+            ammoToFill = ammoRemain;
+        }
+
         magAmmo += ammoToFill;
+        ammoRemain -= ammoToFill;
+
         state = State.Ready;
     }
 }

@@ -20,7 +20,7 @@ public class GameManager : SingleTon<GameManager>
     {
         if (isPause)
         {
-            Pause();
+            //Pause();
         }
 
         if (IsGameover)

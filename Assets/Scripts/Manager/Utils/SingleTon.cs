@@ -27,14 +27,6 @@ public class SingleTon<T> : MonoBehaviour where T : MonoBehaviour
 
     private void Awake()
     {
-        if (instance == null)
-        {
-            instance = this as T;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        DontDestroyOnLoad(gameObject);
     }
 }

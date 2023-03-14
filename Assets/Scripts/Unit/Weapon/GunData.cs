@@ -18,9 +18,11 @@ public class GunData : ScriptableObject
     public float reloadTime = 1.8f;
     [Range(0f, 1f)]
     public float bulletForce = 1.0f;
+
     [Space]
-    [Range(0f, 100f)]
-    public int initAmmo = 100;
+
+    [Range(0, 90)]
+    public int initAmmo = 90;
     [Range(0, 30)]
     public int magCapacity = 30;
 }

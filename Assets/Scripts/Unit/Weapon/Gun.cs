@@ -4,27 +4,31 @@ using UnityEngine;
 [RequireComponent(typeof(AudioSource))]
 public class Gun : MonoBehaviour
 {
-    public enum State { Ready, Empty, Reloading }
+    public enum State 
+    { 
+        Ready, 
+        Empty, 
+        Reloading
+    }
+
     public State state { get; private set; }
-    private Animator gunAnimator;
 
     [Space]
 
     [Header("Data")]
     [SerializeField]
     private GunData gunData;
-    [SerializeField]
-    private Transform firePosition;
+    public Transform firePoint;
 
     [Space]
     
     [Header("Spec")]
     public int magAmmo;
     public int ammoRemain;
+    public int magCapacity = 30;
     [SerializeField]
-    private float fireRange;
-    [SerializeField]
-    private float lastFireTime;
+    private float fireRange = 100.0f;
+    public float lastFireTime;
 
     [Space]
 
@@ -37,13 +41,9 @@ public class Gun : MonoBehaviour
     private ParticleSystem shellEject;
     [SerializeField]
     private LineRenderer lineRenderer; 
-    
-    private readonly int hashFire = Animator.StringToHash("Fire");
-    private readonly int hashReload = Animator.StringToHash("Reload");
 
     private void Awake()
     {
-        gunAnimator = GetComponent<Animator>();
         gunAudioSource = GetComponent<AudioSource>();
         lineRenderer = GetComponent<LineRenderer>();
 
@@ -59,15 +59,22 @@ public class Gun : MonoBehaviour
         lastFireTime = 0;
     }
 
-    public void Fire()
+    private void OnDisable()
+    {
+        StopAllCoroutines();
+    }
+
+    public bool Fire(Vector3 target)
     {
         if (state == State.Ready && Time.time >= lastFireTime + gunData.timeBetFire)
         {
             lastFireTime = Time.time;
             Shot();
 
-            gunAnimator.SetTrigger(hashFire);
+            return true;
         }
+
+        return false;
     }
 
     private void Shot()
@@ -75,8 +82,8 @@ public class Gun : MonoBehaviour
         RaycastHit hit;
         Vector3 hitPosition = Vector3.zero;
 
-        if (Physics.Raycast(firePosition.position,
-            firePosition.forward, out hit, gunData.range))
+        if (Physics.Raycast(firePoint.position,
+            firePoint.forward, out hit, gunData.range))
         {
             IDamageable target = hit.collider.GetComponent<IDamageable>();
             IBulletTakable bulletTakable = hit.transform.GetComponent<IBulletTakable>();
@@ -91,7 +98,7 @@ public class Gun : MonoBehaviour
         }
         else
         {
-            hitPosition = firePosition.position + firePosition.forward * gunData.range;
+            hitPosition = firePoint.position + firePoint.forward * gunData.range;
         }
 
         StartCoroutine(ShotEffectCoroutine(hitPosition));
@@ -109,7 +116,7 @@ public class Gun : MonoBehaviour
         shellEject.Play();
         gunAudioSource.PlayOneShot(gunData.shotClip);
 
-        lineRenderer.SetPosition(0, firePosition.position);
+        lineRenderer.SetPosition(0, firePoint.position);
         lineRenderer.SetPosition(1, hitPosition);
         lineRenderer.enabled = true;
 
@@ -120,12 +127,10 @@ public class Gun : MonoBehaviour
 
     public bool Reload()
     {
-        if (state == State.Reloading || ammoRemain <= 0 || magAmmo >= gunData.magCapacity)
+        if (state == State.Reloading || ammoRemain <= 0 || magAmmo >= magCapacity)
         {
             return false;
         }
-
-        gunAnimator.SetTrigger(hashReload);
 
         StartCoroutine(ReloadCoroutine());
 
@@ -139,7 +144,7 @@ public class Gun : MonoBehaviour
 
         yield return new WaitForSeconds(gunData.reloadTime);
 
-        int ammoToFill = gunData.magCapacity - magAmmo;
+        int ammoToFill = magCapacity - magAmmo;
 
         if (ammoRemain < ammoToFill)
         {

@@ -4,6 +4,7 @@ public class PlayerHealth : Unit
 {
     private PlayerController controller;
     private PlayerShooter shooter;
+    private Animator animator;
     private AudioSource audioSource;
 
     [Header("Player")]
@@ -13,11 +14,14 @@ public class PlayerHealth : Unit
     private AudioClip hitClip;
     [SerializeField]
     private AudioClip deathClip;
+    [SerializeField]
+    private AudioClip healingClip;
 
     private void Awake()
     {
         controller = GetComponent<PlayerController>();
         shooter = GetComponent<PlayerShooter>();
+        animator = GetComponentInChildren<Animator>();
         audioSource = GetComponent<AudioSource>();
     }
 
@@ -25,19 +29,18 @@ public class PlayerHealth : Unit
     {
         base.OnEnable();
 
-        UIManager.Instance.healthSlider.maxValue = playerData.hp;
-        UIManager.Instance.healthSlider.value = hp;
-
         controller.enabled = true;
         shooter.enabled = true;
+
+        UIManager.Instance.healthSlider.maxValue = playerData.hp;
+        UpateUI();
     }
 
     public override void RestoreHP(float restoreHP)
     {
         base.RestoreHP(restoreHP);
 
-        UIManager.Instance.healthSlider.value = hp;
-        UIManager.Instance.HealthTextUI(hp, playerData.hp);
+        UpateUI();
     }
 
     public override void OnDamage(float damage, Vector3 hitPoint, Vector3 hitNormal)
@@ -49,16 +52,24 @@ public class PlayerHealth : Unit
 
         base.OnDamage(damage, hitPoint, hitNormal);
 
-        UIManager.Instance.healthSlider.value = hp;
-        UIManager.Instance.HealthTextUI(hp, playerData.hp);
+        UpateUI();
     }
 
     public override void Die()
     {
         base.Die();
 
+        animator.SetTrigger("Die");
+        audioSource.PlayOneShot(deathClip);
+
         controller.enabled = false;
         shooter.enabled = false;
+    }
+
+    private void UpateUI()
+    {
+        UIManager.Instance.healthSlider.value = hp;
+        UIManager.Instance.HealthTextUI(hp, playerData.hp);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -70,6 +81,7 @@ public class PlayerHealth : Unit
             if (item != null)
             {
                 item.Use(gameObject);
+                audioSource.PlayOneShot(healingClip);
             }
         }
     }

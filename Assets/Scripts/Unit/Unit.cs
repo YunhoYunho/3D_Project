@@ -1,9 +1,10 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Unit : MonoBehaviour, IDamageable
 {
-    public float initHP = 200.0f;
+    protected float initHP = 200.0f;
     public float hp { get; protected set; }
     public bool dead { get; protected set; }
     public event Action onDeath;

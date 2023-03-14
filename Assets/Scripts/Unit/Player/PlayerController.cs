@@ -4,26 +4,16 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
+    private Animator animator;
     private CharacterController controller;
-    private CrosshairUI crosshairUI;
 
     private float moveY = 0;
-    private float originPosY;
-
-    private float applyCrouchPosY;
-    private float applySpeed;
 
     private bool isGround = true;
-    private bool isJumping = false;
-    private bool isCrouch = false;
 
     [Header("General")]
     [SerializeField]
     private float moveSpeed;
-    [SerializeField]
-    private float crouchSpeed;
-    [SerializeField]
-    private float crouchPosY;
     [SerializeField]
     private float jumpPower;
     [SerializeField]
@@ -39,44 +29,48 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
+        animator = GetComponentInChildren<Animator>();
         controller = GetComponent<CharacterController>();
-        crosshairUI = FindObjectOfType<CrosshairUI>();
     }
 
     private void Start()
     {
-        applySpeed = moveSpeed;
-        originPosY = Camera.main.transform.localPosition.y;
-        applyCrouchPosY = originPosY;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void Update()
     {
         IsGround();
-        TryJump();
-        TryCrouch();
         Move();
+        Rotate();
+        Jump();
         InterAction();
     }
-
     private void IsGround()
     {
         isGround = Physics.Raycast(transform.position, Vector3.down, controller.bounds.extents.y + 0.1f);
-        crosshairUI.Jumping(!isGround);
     }
 
     private void Move()
     {
-        controller.Move(transform.forward * InputManager.Instance.move * moveSpeed * Time.deltaTime);
-        controller.Move(transform.right * InputManager.Instance.rotate * moveSpeed * Time.deltaTime);
+        Vector3 fowardVec = new Vector3(Camera.main.transform.forward.x, 0f, Camera.main.transform.forward.z).normalized;
+        Vector3 rightVec = new Vector3(Camera.main.transform.right.x, 0f, Camera.main.transform.right.z).normalized;
+
+        Vector3 moveInput = Vector3.forward * Input.GetAxis("Vertical") + Vector3.right * Input.GetAxis("Horizontal");
+        if (moveInput.sqrMagnitude > 1f) moveInput.Normalize();
+
+        animator.SetFloat("XInput", Input.GetAxis("Horizontal"));
+        animator.SetFloat("YInput", Input.GetAxis("Vertical"));
+
+        Vector3 moveVec = fowardVec * moveInput.z + rightVec * moveInput.x;
+
+        controller.Move(moveVec * moveSpeed * Time.deltaTime);
     }
 
-    private void TryJump()
+    private void Rotate()
     {
-        if (isCrouch)
-            Crouch();
-
-        Jump();
+        transform.forward = new Vector3(
+            Camera.main.transform.forward.x, 0f, Camera.main.transform.forward.z).normalized;
     }
 
     private void Jump()
@@ -84,7 +78,6 @@ public class PlayerController : MonoBehaviour
         if (InputManager.Instance.jump && isGround)
         {
             moveY = jumpPower;
-            crosshairUI.Jumping(isJumping);
         }
         else if (controller.isGrounded)
             moveY = 0;
@@ -92,53 +85,6 @@ public class PlayerController : MonoBehaviour
             moveY += gravity * Time.deltaTime;
 
         controller.Move(Vector3.up * moveY * Time.deltaTime);
-    }
-
-    private void TryCrouch()
-    {
-        if (InputManager.Instance.crouch)
-        {
-            Crouch();
-        }
-    }
-
-    private void Crouch()
-    {
-        isCrouch = !isCrouch;
-        crosshairUI.Crouching(isCrouch);
-
-        if (isCrouch)
-        {
-            applySpeed = crouchSpeed;
-            applyCrouchPosY = crouchPosY;
-        }
-
-        else
-        {
-            applySpeed = moveSpeed;
-            applyCrouchPosY = originPosY;
-        }
-
-        StartCoroutine(CrouchCoroutine());
-    }
-
-    private IEnumerator CrouchCoroutine()
-    {
-        float posY = Camera.main.transform.localPosition.y;
-        int count = 0;
-
-        while (posY != applyCrouchPosY)
-        {
-            count++;
-            posY = Mathf.Lerp(posY, applyCrouchPosY, 0.2f);
-            Camera.main.transform.localPosition = new Vector3(0, posY, 0);
-
-            if (count > 30)
-                break;
-            yield return null;
-        }
-
-        Camera.main.transform.localPosition = new Vector3(0, applyCrouchPosY, 0);
     }
 
     private void InterAction()

@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa3dd2347154814498e6eabb271b9927, type: 3}
   m_Name: Doozy Data
   m_EditorClassIdentifier: 
-  hp: 100
-  damage: 20
+  hp: 150
+  damage: 15
   speed: 2
-  traceDist: 60
-  attackDist: 40
+  traceDist: 30
+  attackDist: 5

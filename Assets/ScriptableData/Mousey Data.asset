@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Mousey Data
   m_EditorClassIdentifier: 
   hp: 150
-  damage: 30
+  damage: 20
   speed: 2
   traceDist: 30
-  attackDist: 20
+  attackDist: 1.3

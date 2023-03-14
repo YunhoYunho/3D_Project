@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Arrow : MonoBehaviour
 {
@@ -7,12 +8,12 @@ public class Arrow : MonoBehaviour
     [SerializeField]
     private EnemyData enemyData;
     [SerializeField]
-    private float force = 1500.0f;
+    private float force = 10.0f;
 
     private void Start()
     {
         rigidbody = GetComponent<Rigidbody>();
-        rigidbody.AddForce(transform.forward * force);
+        rigidbody.AddForce(transform.forward * force, ForceMode.Impulse);
     }
 
     private void OnTriggerEnter(Collider other)

@@ -36,6 +36,6 @@ public class FPSUI : MonoBehaviour
             frameCount = 0;
         }
 
-        text.text = string.Format("{0} FPS", fps);
+        text.text = string.Format("{0} FPS", fps.ToString("F2"));
     }
 }

@@ -85,7 +85,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9004730858006527974}
-  - component: {fileID: 9004730858006527975}
   - component: {fileID: 802300340}
   m_Layer: 5
   m_Name: Crosshair
@@ -119,26 +118,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!95 &9004730858006527975
-Animator:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9004730858006527973}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 067482876050af940afb5b4fa30c5b7e, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &802300340
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -151,7 +130,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df86e1d7bca63d741b856b9befbe825b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 9004730858006527975}
+  aimPoint: {fileID: 0}
+  hitPoint: {fileID: 0}
+  smoothTime: 0.2
 --- !u!1 &9004730858139535652
 GameObject:
   m_ObjectHideFlags: 0
